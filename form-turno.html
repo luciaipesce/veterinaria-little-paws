@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turnos | Little Paws</title>
+    <title>Nuevo Turno | Little Paws</title>
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -10,7 +11,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_circle_left" />
 </head>
 <body>
-    <div id="msg" class="mensaje-exito" style="display:none;"></div>
 
     <header>
         <a href="index.html" class="logo">
@@ -18,34 +18,9 @@
         </a>
     </header>
 
-    <a href="index.html" class="flecha-volver">
+    <a href="turnos.html" class="flecha-volver">
         <span class="material-symbols-outlined">arrow_circle_left</span>
     </a>
-
-    <main>
-        <h2>📅 Lista de Turnos</h2>
-        <p>Estos son todos los turnos registrados en la veterinaria 💖</p>
-
-        <button class="boton" id="btnNuevoTurno">➕ Agregar Turno</button>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Mascota</th>
-                    <th>Cliente</th>
-                    <th>Motivo</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-
-            <tbody id="tablaTurnos"></tbody>
-        </table>
-    </main>
-
-    <script src="js/turnos.js"></script>
 
     <!-- POPUP KAWAII -->
     <div id="popup" class="popup hidden">
@@ -53,5 +28,36 @@
             <p id="popup-msg"></p>
         </div>
     </div>
+
+    <main class="form-container">
+
+        <h1 class="titulo-form">Nuevo Turno</h1>
+
+        <form id="formTurno">
+
+            <label>Fecha</label>
+            <input type="date" id="fecha" required>
+
+            <label>Hora</label>
+            <input type="time" id="hora" required>
+
+            <label>Mascota</label>
+            <input type="text" id="mascota" required>
+
+            <label>Cliente</label>
+            <input type="text" id="cliente" required>
+
+            <label>Motivo</label>
+            <input type="text" id="motivo">
+
+            <button type="submit" class="boton guardar-btn">
+                💖 Guardar Turno
+            </button>
+
+        </form>
+    </main>
+
+    <script src="js/form-turno.js"></script>
+
 </body>
 </html>

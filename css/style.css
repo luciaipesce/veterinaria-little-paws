@@ -304,3 +304,74 @@ form input:focus {
     background: #ff4fa3;
     transform: scale(1.03);
 }
+
+/* ============================
+    INPUT DATE (Fecha)
+===============================*/
+input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #fff;
+    border: 2px solid #f5a5c0;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    font-family: "Poppins", sans-serif;
+    color: #333;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(51%) sepia(38%) saturate(600%) hue-rotate(290deg) brightness(95%) contrast(90%);
+    cursor: pointer;
+}
+
+/* ============================
+    SELECT (Dueño)
+===============================*/
+select {
+    background-color: #fff;
+    border: 2px solid #f5a5c0;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    font-family: "Poppins", sans-serif;
+    color: #333;
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+/* Flecha del select */
+select::-ms-expand {
+    display: none;
+}
+
+select {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23f279a6" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 18px;
+}
+
+/* QUITAR borde negro feo al seleccionar */
+select:focus,
+input[type="date"]:focus {
+    outline: none !important;
+    border: 2px solid #ff7eb6 !important; /* rosita kawaii */
+    box-shadow: 0 0 6px rgba(255, 126, 182, 0.4); /* glow suave */
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="date"]:focus,
+select:focus {
+    outline: none !important;
+    border: 2px solid #ff7eb6 !important;
+    box-shadow: 0 0 6px rgba(255, 126, 182, 0.4);
+}
+
+
+

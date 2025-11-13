@@ -88,7 +88,7 @@ async function eliminarCliente(dni) {
     const res = await fetch(`${URL}/${dni}`, { method: "DELETE" });
 
     if (!res.ok) {
-      mostrarPopup("⚠️ No se pudo eliminar el cliente");
+      mostrarPopup("⚠️ No se pudo Eliminar el Cliente");
       return;
     }
 

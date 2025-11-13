@@ -8,9 +8,9 @@ app.use(express.json());
 
 // CONFIG SQL LOGIN (NO Windows)
 const dbConfig = {
-  user: "vet_admin",      
-  password: "12345",      
-  server: "KASTUX",       
+  user: "vet_admin",
+  password: "12345",
+  server: "KASTUX",  // CAMBIAR si tu servidor tiene otro nombre
   database: "veterinaria-little-paws",
   options: {
     encrypt: false,
@@ -18,10 +18,14 @@ const dbConfig = {
   }
 };
 
-// PROBAR CONEXIÓN AL INICIO
+// PROBAR CONEXIÓN
 sql.connect(dbConfig)
-  .then(() => console.log("✅ Conectado a SQL Server con usuario SQL"))
+  .then(() => console.log("✅ Conectado a SQL Server"))
   .catch(err => console.log("❌ Error de conexión:", err));
+
+/* =====================================================
+                CLIENTES
+=====================================================*/
 
 // GET CLIENTES
 app.get("/clientes", async (req, res) => {
@@ -47,18 +51,18 @@ app.post("/clientes", async (req, res) => {
       .input("Telefono", sql.NVarChar(50), Telefono)
       .input("Email", sql.NVarChar(100), Email)
       .query(`
-        INSERT INTO Clientes (DNI, Nombre, Domicilio, Telefono, Email)
+        INSERT INTO
+        Clientes (DNI, Nombre, Domicilio, Telefono, Email)
         VALUES (@DNI, @Nombre, @Domicilio, @Telefono, @Email)
       `);
 
-    res.json({ mensaje: "💖 Cliente agregado correctamente" });
-
+    res.json({ mensaje: "Cliente agregado con éxito" });
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-// DELETE
+// DELETE CLIENTE
 app.delete("/clientes/:dni", async (req, res) => {
   const { dni } = req.params;
 
@@ -68,14 +72,145 @@ app.delete("/clientes/:dni", async (req, res) => {
       .input("DNI", sql.Int, dni)
       .query("DELETE FROM Clientes WHERE DNI = @DNI");
 
-    res.json({ mensaje: "Cliente eliminado correctamente 💀" });
+    res.json({ mensaje: "Cliente eliminado" });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+/* =====================================================
+                MASCOTAS
+=====================================================*/
+
+// GET MASCOTAS
+app.get("/mascotas", async (req, res) => {
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request().query(`
+        SELECT M.ID, M.Nombre, M.Especie, M.Raza, M.Peso, M.FechaNacimiento,
+        M.DNI_Cliente, C.Nombre AS NombreCliente
+        FROM Mascotas M
+        JOIN Clientes C ON C.DNI = M.DNI_Cliente
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// POST MASCOTA
+app.post("/mascotas", async (req, res) => {
+  const { Nombre, Especie, Raza, Peso, FechaNacimiento, dniDueno } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("Nombre", sql.NVarChar(100), Nombre)
+      .input("Especie", sql.NVarChar(50), Especie)
+      .input("Raza", sql.NVarChar(100), Raza)
+      .input("Peso", sql.Decimal(5,2), Peso || null)
+      .input("FechaNacimiento", sql.Date, FechaNacimiento || null)
+      .input("DNI_Cliente", sql.Int, dniDueno)   // 👈 ESTE CAMBIO ES EL CLAVE 💖
+      .query(`
+        INSERT INTO Mascotas
+        (Nombre, Especie, Raza, Peso, FechaNacimiento, DNI_Cliente)
+        VALUES (@Nombre, @Especie, @Raza, @Peso, @FechaNacimiento, @DNI_Cliente)
+      `);
+
+    res.json({ mensaje: "Mascota agregada con éxito" });
+
+  } catch (err) {
+    console.error("🔥 ERROR SQL:", err.message);
+    res.status(500).send(err.message);
+  }
+});
+
+
+// DELETE MASCOTA
+app.delete("/mascotas/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("ID", sql.Int, id)
+      .query("DELETE FROM Mascotas WHERE ID = @ID");
+
+    res.json({ mensaje: "Mascota eliminada" });
 
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-// SERVER
+
+/* =====================================================
+                TURNOS
+=====================================================*/
+
+// GET TURNOS
+app.get("/turnos", async (req, res) => {
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request().query(`
+        SELECT T.ID, T.Fecha, T.Hora, T.Motivo,
+               M.Nombre AS NombreMascota, C.Nombre AS NombreCliente
+        FROM Turnos T
+        JOIN Mascotas M ON M.ID = T.ID_Mascota
+        JOIN Clientes C ON C.DNI = M.DNI_Cliente
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// POST TURNO
+app.post("/turnos", async (req, res) => {
+  const { Fecha, Hora, Motivo, ID_Mascota } = req.body;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("Fecha", sql.Date, Fecha)
+      .input("Hora", sql.Time, Hora)
+      .input("Motivo", sql.NVarChar(200), Motivo)
+      .input("ID_Mascota", sql.Int, ID_Mascota)
+      .query(`
+        INSERT INTO Turnos (Fecha, Hora, Motivo, ID_Mascota)
+        VALUES (@Fecha, @Hora, @Motivo, @ID_Mascota)
+      `);
+
+    res.json({ mensaje: "Turno registrado con éxito" });
+
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// DELETE TURNO
+app.delete("/turnos/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const pool = await sql.connect(dbConfig);
+    await pool.request()
+      .input("ID", sql.Int, id)
+      .query("DELETE FROM Turnos WHERE ID = @ID");
+
+    res.json({ mensaje: "Turno eliminado" });
+
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+/* =====================================================
+                SERVER
+=====================================================*/
+
 app.listen(3000, () =>
   console.log("🚀 Servidor corriendo en http://localhost:3000")
 );
