@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes | Little Paws</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+
+    <!-- Iconos Material -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_circle_left" />
+</head>
+<body>
+    <div id="msg" class="mensaje-exito" style="display:none;"></div>
+
+    <header>
+        <a href="index.html" class="logo">
+            <h1>Veterinaria Little Paws <span class="huellas">🐾</span></h1>
+        </a>
+    </header>
+
+    <!-- FLECHA VOLVER -->
+    <a href="index.html" class="flecha-volver">
+        <span class="material-symbols-outlined">arrow_circle_left</span>
+    </a>
+
+    <main>
+        <h2>👩‍⚕️ Lista de Clientes</h2>
+        <p>Estos son todos los clientes registrados en la veterinaria 💖</p>
+
+        <button class="boton" id="btnNuevoCliente">➕ Agregar Cliente</button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>DNI</th>
+                    <th>Nombre</th>
+                    <th>Domicilio</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody id="tablaClientes"></tbody>
+        </table>
+    </main>
+
+    <script src="js/clientes.js"></script>
+
+    <div id="popup" class="popup hidden">
+    <div class="popup-content">
+        <p id="popup-msg"></p>
+    </div>
+</div>
+
+</body>
+</html>
