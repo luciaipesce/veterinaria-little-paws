@@ -175,6 +175,77 @@ app.get("/turnos", async (req, res) => {
   }
 });
 
+app.get("/turnos/hoy", async (req, res) => {
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request().query(`
+      SELECT 
+        T.ID, T.Fecha, T.Hora, T.Motivo,
+        M.Nombre AS NombreMascota,
+        C.Nombre AS NombreCliente
+      FROM Turnos T
+      JOIN Mascotas M ON M.ID = T.ID_Mascota
+      JOIN Clientes C ON C.DNI = T.DNI_Cliente
+      WHERE T.Fecha = CONVERT(date, GETDATE())
+      ORDER BY T.Fecha ASC, T.Hora ASC
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message);
+  }
+});
+
+
+app.get("/turnos/semana", async (req, res) => {
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request().query(`
+      SELECT 
+        T.ID, T.Fecha, T.Hora, T.Motivo,
+        M.Nombre AS NombreMascota,
+        C.Nombre AS NombreCliente
+      FROM Turnos T
+      JOIN Mascotas M ON M.ID = T.ID_Mascota
+      JOIN Clientes C ON C.DNI = T.DNI_Cliente
+      WHERE T.Fecha BETWEEN 
+            DATEADD(day, -(DATEPART(weekday, GETDATE()) + @@DATEFIRST - 2) % 7, CONVERT(date, GETDATE()))
+        AND DATEADD(day, 4 - ((DATEPART(weekday, GETDATE()) + @@DATEFIRST - 2) % 7), CONVERT(date, GETDATE()))
+      ORDER BY T.Fecha ASC, T.Hora ASC
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message);
+  }
+});
+
+
+app.get("/turnos/mes", async (req, res) => {
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request().query(`
+      SELECT 
+        T.ID, T.Fecha, T.Hora, T.Motivo,
+        M.Nombre AS NombreMascota,
+        C.Nombre AS NombreCliente
+      FROM Turnos T
+      JOIN Mascotas M ON M.ID = T.ID_Mascota
+      JOIN Clientes C ON C.DNI = T.DNI_Cliente
+      WHERE MONTH(T.Fecha) = MONTH(GETDATE())
+        AND YEAR(T.Fecha) = YEAR(GETDATE())
+      ORDER BY T.Fecha ASC, T.Hora ASC
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message);
+  }
+});
+
 // POST TURNO
 app.post("/turnos", async (req, res) => {
   const { Fecha, Hora, Motivo, ID_Mascota, DNI_Cliente } = req.body;

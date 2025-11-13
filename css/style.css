@@ -382,6 +382,37 @@ input[type="time"]::-webkit-datetime-edit-text {
     margin: 0 !important;
 }
 
+.filtros-turnos {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.filtro-btn {
+    background: #ff79a8;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    font-size: 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.14);
+}
+
+.filtro-btn:hover {
+    background: #ff5f94;
+    transform: scale(1.07);
+}
+
+.filtro-btn.active {
+    background: #ff4081;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.18);
+    transform: scale(1.1);
+}
 
 
 
