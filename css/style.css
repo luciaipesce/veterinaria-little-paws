@@ -373,5 +373,15 @@ select:focus {
     box-shadow: 0 0 6px rgba(255, 126, 182, 0.4);
 }
 
+input[type="time"] {
+    letter-spacing: 0 !important;  /* evita separación del texto */
+}
+
+input[type="time"]::-webkit-datetime-edit-text {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+
 
 

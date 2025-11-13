@@ -1,18 +1,6 @@
 const URL_TURNOS = "http://localhost:3000/turnos";
 
-const msgTurno = localStorage.getItem("msgTurno");
-if (msgTurno) {
-    const div = document.getElementById("msg");
-    div.textContent = msgTurno;
-    div.style.display = "block";
-
-    localStorage.removeItem("msgTurno");
-
-    setTimeout(() => {
-        div.style.display = "none";
-    }, 3000);
-}
-
+// Popup kawaii
 function mostrarPopup(mensaje) {
     const popup = document.getElementById("popup");
     const msg = document.getElementById("popup-msg");
@@ -20,98 +8,72 @@ function mostrarPopup(mensaje) {
     msg.innerHTML = mensaje;
     popup.classList.remove("hidden");
 
-    setTimeout(() => {
-        popup.classList.add("hidden");
-    }, 2000);
+    setTimeout(() => popup.classList.add("hidden"), 2000);
 }
 
+// Cargar lista de turnos
 async function cargarTurnos() {
     try {
         const res = await fetch(URL_TURNOS);
-        const data = await res.json();
+        if (!res.ok) {
+            console.error("Error al traer turnos:", await res.text());
+            return;
+        }
+
+        const turnos = await res.json();
 
         const tabla = document.getElementById("tablaTurnos");
         tabla.innerHTML = "";
 
-        data.forEach(t => {
+        turnos.forEach(t => {
+            // t.Hora suele venir como "03:48:00", dejo solo HH:MM
+            const horaBonita = t.Hora ? t.Hora.toString().substring(0,5) : "-";
+
             tabla.innerHTML += `
                 <tr>
-                    <td>${t.IdTurno}</td>
+                    <td>${t.ID}</td>
                     <td>${t.Fecha ? new Date(t.Fecha).toLocaleDateString() : "-"}</td>
-                    <td>${t.Hora || "-"}</td>
-                    <td>${t.Mascota || "-"}</td>
-                    <td>${t.Cliente || "-"}</td>
-                    <td>${t.Motivo || "-"}</td>
+                    <td>${horaBonita}</td>
+                    <td>${t.NombreMascota}</td>
+                    <td>${t.NombreCliente}</td>
+                    <td>${t.Motivo}</td>
                     <td>
-                        <button class="btn-eliminar" onclick="eliminarTurno(${t.IdTurno})">
+                        <button class="btn-eliminar" onclick="eliminarTurno(${t.ID})">
                             ❌
                         </button>
                     </td>
                 </tr>
             `;
         });
+
     } catch (err) {
-        console.warn("⚠️ No se pudo conectar al backend, usando localStorage…", err);
-
-        const lista = JSON.parse(localStorage.getItem("turnos")) || [];
-        const tabla = document.getElementById("tablaTurnos");
-        tabla.innerHTML = "";
-
-        lista.forEach(t => {
-            tabla.innerHTML += `
-                <tr>
-                    <td>${t.id}</td>
-                    <td>${t.Fecha || "-"}</td>
-                    <td>${t.Hora || "-"}</td>
-                    <td>${t.Mascota || "-"}</td>
-                    <td>${t.Cliente || "-"}</td>
-                    <td>${t.Motivo || "-"}</td>
-                    <td>
-                        <button class="btn-eliminar" onclick="eliminarTurnoLocal(${t.id})">
-                            ❌
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
+        console.error("⚠️ Error Cargando Turnos:", err);
     }
 }
 
+// Botón crear turno
 document.getElementById("btnNuevoTurno").addEventListener("click", () => {
     window.location.href = "form-turno.html";
 });
 
+// Eliminar turno
 async function eliminarTurno(id) {
     try {
         const res = await fetch(`${URL_TURNOS}/${id}`, { method: "DELETE" });
 
         if (!res.ok) {
-            mostrarPopup("⚠️ No se pudo eliminar el turno");
+            mostrarPopup("⚠️ No se pudo Eliminar el Turno");
             return;
         }
 
-        mostrarPopup("💗 Turno eliminado con éxito");
-
-        setTimeout(() => {
-            cargarTurnos();
-        }, 1200);
+        mostrarPopup("💗 Turno Eliminado con Éxito");
+        setTimeout(cargarTurnos, 1200);
 
     } catch (err) {
-        console.warn("Sin conexión con el backend, borrando localmente…", err);
-        eliminarTurnoLocal(id);
+        console.error("Error Eliminando Turno:", err);
+        mostrarPopup("⚠️ Error de Conexión");
     }
 }
 
-function eliminarTurnoLocal(id) {
-    let lista = JSON.parse(localStorage.getItem("turnos")) || [];
-    lista = lista.filter(t => t.id != id);
-    localStorage.setItem("turnos", JSON.stringify(lista));
-
-    mostrarPopup("💗 Turno eliminado localmente");
-
-    setTimeout(() => {
-        cargarTurnos();
-    }, 1200);
-}
-
+// Ejecutar al cargar
 cargarTurnos();

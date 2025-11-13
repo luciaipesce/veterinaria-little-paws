@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -9,12 +10,12 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_circle_left" />
 </head>
+
 <body>
-    <div id="msg" class="mensaje-exito" style="display:none;"></div>
 
     <header>
         <a href="index.html" class="logo">
-            <h1>Veterinaria Little Paws <span class="huellas">🐾</span></h1>
+            <h1>Veterinaria Little Paws 🐾</h1>
         </a>
     </header>
 
@@ -24,14 +25,14 @@
 
     <main>
         <h2>📅 Lista de Turnos</h2>
-        <p>Estos son todos los turnos registrados en la veterinaria 💖</p>
+        <p>Estos son todos los turnos registrados 💖</p>
 
         <button class="boton" id="btnNuevoTurno">➕ Agregar Turno</button>
 
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Nº</th>
                     <th>Fecha</th>
                     <th>Hora</th>
                     <th>Mascota</th>
@@ -45,13 +46,13 @@
         </table>
     </main>
 
-    <script src="js/turnos.js"></script>
-
-    <!-- POPUP KAWAII -->
     <div id="popup" class="popup hidden">
         <div class="popup-content">
             <p id="popup-msg"></p>
         </div>
     </div>
+
+    <script src="js/turnos.js"></script>
 </body>
 </html>
+

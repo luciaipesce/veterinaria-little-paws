@@ -34,7 +34,7 @@ app.get("/clientes", async (req, res) => {
     const result = await pool.request().query("SELECT * FROM Clientes");
     res.json(result.recordset);
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).send(JSON.stringify(err));
   }
 });
 
@@ -58,7 +58,7 @@ app.post("/clientes", async (req, res) => {
 
     res.json({ mensaje: "Cliente agregado con éxito" });
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).send(JSON.stringify(err));
   }
 });
 
@@ -74,7 +74,7 @@ app.delete("/clientes/:dni", async (req, res) => {
 
     res.json({ mensaje: "Cliente eliminado" });
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).send(JSON.stringify(err));
   }
 });
 
@@ -95,7 +95,7 @@ app.get("/mascotas", async (req, res) => {
     `);
     res.json(result.recordset);
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).send(JSON.stringify(err));
   }
 });
 
@@ -122,7 +122,7 @@ app.post("/mascotas", async (req, res) => {
 
   } catch (err) {
     console.error("🔥 ERROR SQL:", err.message);
-    res.status(500).send(err.message);
+    res.status(500).send(JSON.stringify(err));
   }
 });
 
@@ -140,77 +140,97 @@ app.delete("/mascotas/:id", async (req, res) => {
     res.json({ mensaje: "Mascota eliminada" });
 
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).send(JSON.stringify(err));
   }
 });
 
-
 /* =====================================================
-                TURNOS
+                    TURNOS
 =====================================================*/
 
 // GET TURNOS
 app.get("/turnos", async (req, res) => {
   try {
     const pool = await sql.connect(dbConfig);
+
     const result = await pool.request().query(`
-        SELECT T.ID, T.Fecha, T.Hora, T.Motivo,
-               M.Nombre AS NombreMascota, C.Nombre AS NombreCliente
-        FROM Turnos T
-        JOIN Mascotas M ON M.ID = T.ID_Mascota
-        JOIN Clientes C ON C.DNI = M.DNI_Cliente
+      SELECT 
+        T.ID,
+        T.Fecha,
+        T.Hora,
+        T.Motivo,
+        M.ID AS ID_Mascota,
+        M.Nombre AS NombreMascota,
+        C.DNI AS DNI_Cliente,
+        C.Nombre AS NombreCliente
+      FROM Turnos T
+      JOIN Mascotas M ON M.ID = T.ID_Mascota
+      JOIN Clientes C ON C.DNI = T.DNI_Cliente
     `);
+
     res.json(result.recordset);
+
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).send(JSON.stringify(err));
   }
 });
 
 // POST TURNO
 app.post("/turnos", async (req, res) => {
-  const { Fecha, Hora, Motivo, ID_Mascota } = req.body;
+  const { Fecha, Hora, Motivo, ID_Mascota, DNI_Cliente } = req.body;
+
+  console.log("📥 Datos recibidos en backend:", req.body);
 
   try {
     const pool = await sql.connect(dbConfig);
+
+    console.log("⚡ Ejecutando SQL con datos:");
+    console.log("Fecha:", Fecha);
+    console.log("Hora:", Hora);
+    console.log("Motivo:", Motivo);
+    console.log("ID_Mascota:", ID_Mascota);
+    console.log("DNI_Cliente:", DNI_Cliente);
+
     await pool.request()
       .input("Fecha", sql.Date, Fecha)
-      .input("Hora", sql.Time, Hora)
+      .input("Hora", sql.NVarChar(20), Hora)  
       .input("Motivo", sql.NVarChar(200), Motivo)
       .input("ID_Mascota", sql.Int, ID_Mascota)
+      .input("DNI_Cliente", sql.Int, DNI_Cliente)
       .query(`
-        INSERT INTO Turnos (Fecha, Hora, Motivo, ID_Mascota)
-        VALUES (@Fecha, @Hora, @Motivo, @ID_Mascota)
+        INSERT INTO Turnos (Fecha, Hora, Motivo, ID_Mascota, DNI_Cliente)
+        VALUES (@Fecha, @Hora, @Motivo, @ID_Mascota, @DNI_Cliente)
       `);
 
     res.json({ mensaje: "Turno registrado con éxito" });
 
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error("🔥 ERROR SQL COMPLETO:", err);   // 👈 MOSTRAR ERROR REAL
+    res.status(500).send(JSON.stringify(err));      // 👈 ENVIAR ERROR REAL
   }
 });
 
+
 // DELETE TURNO
 app.delete("/turnos/:id", async (req, res) => {
-  const { id } = req.params;
-
   try {
     const pool = await sql.connect(dbConfig);
+
     await pool.request()
-      .input("ID", sql.Int, id)
+      .input("ID", sql.Int, req.params.id)
       .query("DELETE FROM Turnos WHERE ID = @ID");
 
     res.json({ mensaje: "Turno eliminado" });
 
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).send(JSON.stringify(err));
   }
 });
-
 
 /* =====================================================
                 SERVER
 =====================================================*/
 
-app.listen(3000, () =>
-  console.log("🚀 Servidor corriendo en http://localhost:3000")
-);
+app.listen(3000, () => {
+  console.log("🚀 Servidor corriendo en http://localhost:3000");
+});

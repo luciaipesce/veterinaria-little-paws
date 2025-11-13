@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +21,6 @@
         <span class="material-symbols-outlined">arrow_circle_left</span>
     </a>
 
-    <!-- POPUP KAWAII -->
     <div id="popup" class="popup hidden">
         <div class="popup-content">
             <p id="popup-msg"></p>
@@ -35,26 +33,34 @@
 
         <form id="formTurno">
 
-            <label>Fecha</label>
+            <label>Fecha del Turno</label>
             <input type="date" id="fecha" required>
 
-            <label>Hora</label>
-            <input type="time" id="hora" required>
+            <label>Hora del Turno</label>
+            <input type="text" id="hora" placeholder="Ej: 09:30 o 14hs" required>
 
             <label>Mascota</label>
-            <input type="text" id="mascota" required>
+            <select id="idMascota" required></select>
 
             <label>Cliente</label>
-            <input type="text" id="cliente" required>
+            <input type="text" id="cliente" readonly class="input-readonly">
 
             <label>Motivo</label>
-            <input type="text" id="motivo">
+            <select id="motivo" required>
+                <option value="Consulta Médica">Consulta Médica</option>
+                <option value="Vacunación">Vacunación</option>
+                <option value="Control General">Control General</option>
+                <option value="Desparasitación">Desparasitación</option>
+                <option value="Baño / Aseo">Baño / Aseo</option>
+                <option value="Compra de Alimento">Compra de Alimento</option>
+            </select>
 
             <button type="submit" class="boton guardar-btn">
                 💖 Guardar Turno
             </button>
 
         </form>
+
     </main>
 
     <script src="js/form-turno.js"></script>
